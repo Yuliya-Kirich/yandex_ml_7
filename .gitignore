@@ -1,0 +1,26 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# PyCharm
+.idea/
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials
+clearml.conf
+
+# Airflow
+logs/
+airflow.db
+airflow.cfg
+
+# System
+.DS_Store
