@@ -10,15 +10,20 @@ S3_ENDPOINT = "https://storage.yandexcloud.net"
 
 
 def load_data():
-    session = boto3.Session()
-    s3 = session.client(
-        "s3",
-        endpoint_url=S3_ENDPOINT,
-    )
+    from io import BytesIO
+
+    import boto3
+    import pandas as pd
+
+    bucket = "mlops-module7-final-kirichenko"
+    processed_key = "processed/uber_processed.csv"
+    s3_endpoint = "https://storage.yandexcloud.net"
+
+    s3 = boto3.client("s3", endpoint_url=s3_endpoint)
 
     response = s3.get_object(
-        Bucket=BUCKET,
-        Key=PROCESSED_KEY,
+        Bucket=bucket,
+        Key=processed_key,
     )
 
     df = pd.read_csv(BytesIO(response["Body"].read()))
@@ -105,3 +110,29 @@ def save_model(model, model_name: str = "best_taxi_model"):
     print(f"Модель сохранена: {model_path}")
 
     return model_path
+
+def evaluate_models(
+    model_1,
+    X_test_1,
+    y_test_1,
+    model_2,
+    X_test_2,
+    y_test_2,
+):
+    from sklearn.metrics import mean_squared_error
+
+    predictions_1 = model_1.predict(X_test_1)
+    rmse_1 = mean_squared_error(y_test_1, predictions_1) ** 0.5
+
+    predictions_2 = model_2.predict(X_test_2)
+    rmse_2 = mean_squared_error(y_test_2, predictions_2) ** 0.5
+
+    print(f"Модель 1 — RMSE: {rmse_1:.4f}")
+    print(f"Модель 2 — RMSE: {rmse_2:.4f}")
+
+    if rmse_1 <= rmse_2:
+        print("Лучшая модель: train_model_1")
+        return model_1, "train_model_1", rmse_1
+
+    print("Лучшая модель: train_model_2")
+    return model_2, "train_model_2", rmse_2
