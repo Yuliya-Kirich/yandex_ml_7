@@ -78,6 +78,7 @@ def create_pipeline():
         execution_queue="default",
         packages=[
             "scikit-learn>=1.4,<2",
+            "pandas>=2.1,<3",
         ],
         docker="python:3.10",
     )
